@@ -1,0 +1,71 @@
+%!TEX root = main.tex
+
+\subsubsection{Codigos de Reed-Solomon}
+Como fue mencionado antes uno de los dos códigos que utilizaremos en este proyecto, son los códigos de Reed-Solomon. Primero debemos definirlos y para esto los introduciremos por medio de la definición dada en (insertar cita sarria)
+\begin{definition}
+Dado el cuerpo $GF(D)^n$, donde $k\leq n\leq D$ son enteros positivos. Definimos el código de dimensión $k$ como 
+$$RS_D(\alpha,n,k)=\{(f(\alpha_1),\ldots ,f(\alpha_n)):f\in GD(D)[x], grad(f)\leq k-1\}.$$ 
+Donde $\alpha=(\alpha_1,\ldots,\alpha_n)\in GF(D)^n$, con componentes distintas. La función de codificación esta dada por
+$$(a_0,a_1,\ldots,a_{k-1})\mapsto \left(\sum_{i=0}^{k-1}a_i\alpha_1^{i},\ldots,\sum_{i=0}^{k-1}a_i\alpha_n^{i}\right).$$
+Donde cada $a_i\in GF(D).$
+\end{definition}
+La idea detrás de la construcción de este tipo de código es hacer uso de que un polinomio se encuentra determinado por sus coeficientes. Para ver esto en acción, realicemos un ejemplo sencillo para ver esto en acción
+\begin{eg}
+     Consideremos un código con $k=2,n=3$ y $D=3.$ Tomamos $\alpha=(0,1,2)$, esto debido a que necesitamos que las entradas sean diferentes por definicion, Note que las tuplas las escribiremos como cadenas de simbolos de ahora en adelante, es decir $(0,1,2)=012$. Luego el codigo esta dado por evaluar en todos los polinomios de grado $1$ con coeficientes en $GF(3).$
+
+     $$RS(2,3,012)=\{000,111,222,012,120,210,021,102,210\}.$$
+
+     En particular si por ejemplo queremos codificar la palabra $12$, que arroja una fuente triaria tenemos que
+     $$12\mapsto (1+2\cdot0,1+2\cdot1,1+2\cdot2)=102.$$ 
+ \end{eg} 
+
+ Con este ejemplo  podemos enfatizar algunos conceptos
+     \begin{itemize}
+         \item Si uno quiere codificar palabras de longitud $k$, necesitamos que el campo base tenga mas elementos, es decir si queremos codificar una fuente $4-aria$, necesitamos trabajar mínimo con el cuerpo de finito de 4 elementos o mas.
+         \item Note que en este caso la elección del $\alpha$ no es única ya que pudimos haber seleccionado $201,$ por lo que si bien el código bloque cumple la misma función, la codificación cambia. Por lo que seria bueno poder codificar independientemente del $\alpha$ escogido.
+         \item  El punto anterior tiene sentido al considerar que la codificación esta completamente determinada por el polinomio al que es asignado la palabra que emite la fuente. 
+         
+     \end{itemize}
+
+En vista de eso, resulta natural preguntarse si podemos definir los códigos de Reed-Solomon sin considerar un $\alpha$ explicito, es decir, concentrarnos unicamente en la estructura polinomial. Para esto debemos hacer uso de algunos conceptos algebraicos.
+
+\begin{definition}
+    Dado el cuerpo finito $GF(D)$, decimos que $\alpha\in GF(D)-\{0\},$ es un elemento primitivo, si $\alpha$ es un generador de $\alpha\in GF(D)-\{0\}$ visto como grupo bajo la operación de multiplicación.  
+\end{definition}
+
+Este concepto de elemento generador sera crucial, en el sentido de que si bien con la definición original podemos plantear una matriz generadora $G$ y una de corrección $H$, ahora que trabajaremos con el elemento $\alpha$ en ``abstracto''. Generaremos el código por medio de un polinomio generador. Antes de eso mencionaremos los hechos algebraicos que sustentan esta construcción
+\begin{prop}
+    Dado el cuerpo $GF(p)$ con $p$ un numero primo, podemos construir el cuerpo $GF(p^e)$ por medio de el cociente $GF(p)/\langle x^{p^e}-x\rangle$.
+\end{prop}
+esto nos da una construcción por medio de clases de equivalencia, que podemos tomar por medio de residuos, pero resultaría engorrosa, por lo que estos para ejemplificar campos, los construiremos por medio de tomar un factor irreducible de ese polinomio sobre el cuerpo base. El siguiente hecho nos da una caracterización, de aquellos elementos primitivos que podemos ver como raíces del polinomio.
+\begin{prop}
+    Dado $\alpha\in GF(p^e)$, tenemos que $\alpha^{p^e}-\alpha=0$, luego 
+    $$x^{p^e}-x=\prod_{\alpha\in GF(p^e) }(x-\alpha).$$
+\end{prop}
+Note que si excluimos el elemento $0$, tenemos una factorización sobre los elementos no nulos de nuestro cuerpo finito. Con todos estos ingredientes procedemos a dar la definición que usaremos para la codificación
+\begin{definition}
+  Dado $\alpha$ un elemento primitivo, el código de Reed-Solomon se define como
+  $$RS(D,k)=\{(f(1),f(\alpha),\ldots,f(\alpha^{n-1}))\in GF(D)^n:f\in GF(D)[x], grad(f)\leq k-1\}.$$
+  Donde escogemos enteros positivos $n=D-1$ y $k<D.$
+\end{definition}
+Notemos que en primera instancia pareciera que no hay diferencia en los códigos, pero antes de proceder con la diferencia crucial, algunas observaciones.
+\begin{itemize}
+    \item Note que bajo esta definición, por el uso del elemento primitivo $\alpha$, a diferencia de la primera definición evaluación, ya no tenemos el elemento $0$ considerado.
+    \item Ejemplos pequeños como el realizado para la anterior definición, ya no son viables debido a la restricción de la evaluación en elementos primitivos.
+    \item Note que antes había mas grados de libertad para el tamaño de la tupla, ahora la definimos directamente como $D-1$, lo que nos da una cota superior para la longitud de nuestros mensajes.
+\end{itemize}
+Estas son pequeñas cosas que se pueden notar inmediatamente del código definido, pero el factor diferencial viene dado por el siguiente hecho que habíamos anticipado previamente
+\begin{theorem}
+    Dado un código $RS(D,k)$, si la distancia mínima del código es $d=D-k$, entonces el polinomio generador del código esta dado por
+    $$g(x)=\prod_{i=1}^{d-1}(x-\alpha^i),$$
+    donde $\alpha$ es elemento primitivo.
+\end{theorem}
+
+Note que este polinomio divide a el polinomio por el que se realiza el cociente del cuerpo $GF(D)$, por lo que desde un punto de vista algebraico resulta lógico que sea así. Ademas podemos observar que por fin vemos el concepto de distancia mínima que habíamos esquivado hasta el momento, pero que era inevitable evitarlo mas, debido a su rol crucial en la capacidad de un código para detectar y corregir patrones de errores.
+
+
+
+
+
+
+
