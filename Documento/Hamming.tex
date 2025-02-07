@@ -1,0 +1,72 @@
+%!TEX root = main.tex
+
+\section{Códigos de Hamming} El otro código corrector de errores con el que trabajaremos sera el código de Hamming.
+
+El Código de Hamming es un esquema de detección y corrección de errores diseñado por Richard Hamming en 1950.
+
+El principio fundamental del Código de Hamming consiste en agregar bits de redundancia a los datos originales, de manera que los errores introducidos en la transmisión puedan ser detectados e incluso corregidos. En particular, el código Hamming $(7,4)$ permite la corrección de un único bit erróneo y la detección de hasta dos errores en un bloque de datos, pero el problema es que no puede diferenciar entre uno y dos errores entonces para esto se utiliza el codigo de Hamming extendido donde agregamos un bit de paridad mas, el cuales la paridad de todo los datos.
+
+\section{Fundamentos Matemáticos del Código de Hamming}
+
+El Código de Hamming se fundamenta en la teoría de códigos lineales y hace uso de matrices generadoras y de comprobación de paridad para la codificación y la detección de errores.
+
+\subsection{Matriz Generadora}
+
+Para el código Hamming $(7,4)$, la matriz generadora $G$ se define como:
+
+\[
+G = \begin{bmatrix}
+1 & 0 & 0 & 0 & 1 & 1 & 0 \\
+0 & 1 & 0 & 0 & 1 & 0 & 1 \\
+0 & 0 & 1 & 0 & 0 & 1 & 1 \\
+0 & 0 & 0 & 1 & 1 & 1 & 1
+\end{bmatrix}
+\]
+
+Dado un mensaje de 4 bits $m = (m_1, m_2, m_3, m_4)$, el código resultante se obtiene mediante la multiplicación matricial:
+
+\[
+c = m G
+\]
+
+El resultado es un código de 7 bits que incluye tanto los bits de información como los bits de paridad.
+
+\subsection{Matriz de Comprobación de Paridad}
+
+Para detectar y corregir errores en la transmisión, se usa una matriz de comprobación de paridad $H$, definida como:
+
+\[
+H = \begin{bmatrix} 
+1 & 1 & 1 & 0 & 1 & 0 & 0 \\
+1 & 1 & 0 & 1 & 0 & 1 & 0 \\
+1 & 0 & 1 & 1 & 0 & 0 & 1
+\end{bmatrix}
+\]
+
+Dado un código recibido $r = (r_1, r_2, ..., r_7)$, el síndrome $S$ se calcula como:
+
+\[
+S = H \cdot r^T
+\]
+
+Si $S = 000$, significa que no hay errores en la transmisión. Si el resultado es distinto de cero, indica la posición del bit erróneo en el código recibido, permitiendo su corrección.
+
+\subsection{Ejemplo de Codificación, Corrección y Decodificación}
+
+Supongamos que queremos codificar el mensaje $m = (1,0,1,1)$.
+
+Multiplicamos por la matriz $G$:
+
+\[
+c = (1,0,1,1) G = (1, 0, 1, 1, 0, 1, 0)
+\]
+
+El código transmitido es $1011010$. Supongamos que se introduce un error en la posición 3 y se recibe $r = 1001010$.
+
+Calculamos el síndrome:
+
+\[
+S = H \cdot r^T = (0, 1, 0)
+\]
+
+El síndrome indica que el error está en la posición 3. Corrigiéndolo, obtenemos el código correcto $1011010$, que decodificamos extrayendo los bits de datos $1011$.
