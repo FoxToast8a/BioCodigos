@@ -1,5 +1,110 @@
 %!TEX root = main.tex
 
 \subsection{Reed-Solomon aplicado al ADN}
-Dado el hecho que un mensaje puede ser visto por medio de $ASCII$, es natural empezar a preguntarnos por por un campo finito con $256$ elementos, es decir nuestro punto de partida sera $GF(D)$, con $D=2^8.$ Recordemos que este cuerpo se puede construir consiguiendo un polinomio irreducible de grado $8$ sobre $GF(2)$. Luego como cada elemento esta dado por el residuo, tenemos polinomios de grado $7$ o menos, así podemos escribir estos residuos simplemente como cadenas de los coeficientes.
+La siguiente construcción fue hecha de manera netamente demostrativa, debido a que en en la implementación, no se evidencia de manera tan clara el proceso que hay detrás, esto no quiere decir que este sea exactamente el algoritmo de fondo usado.\\
+
+Dado el hecho que un mensaje puede ser visto por medio de $ASCII$, es natural empezar a preguntarnos por por un campo finito con $256$ elementos, es decir nuestro punto de partida sera $GF(D)$, con $D=2^8.$ Recordemos que este cuerpo se puede construir consiguiendo un polinomio irreducible de grado $8$ sobre $GF(2)$. Uno de estos polinomios irreducibles es $x^8+x^4+x^3+x^2+1$  Luego como cada elemento esta dado por el residuo, tenemos polinomios de grado $7$ o menos, así podemos escribir estos residuos simplemente como cadenas de los coeficientes.
 $$GF(D)=\{a_0a_1\ldots a_7: a_i\in GF(2), 0\leq i\leq 7\}.$$
+Un hecho particular es que los coeficientes de los residuos los escribimos en orden descendente, es decir
+$$a_0x^7+a_1x^6\cdots+a_7,$$
+esto es hecho con el propósito de que en el momento que consideremos añadir bits de paridad, lo podamos hacer ajuntando a la derecha de la cadena sin afectar demasiado la notación general.\\
+Luego si tomamos $\alpha$ como nuestro elemento primitivo, tenemos de base que 
+$$\alpha^8+\alpha^4+\alpha^3+\alpha^2+1=0$$
+Luego como los coeficientes son de $GF(2)$, tenemos que
+$$\alpha^8=\alpha^4+\alpha^3+\alpha^2+1$$, recordemos que los elementos de $GF(D)$ estan dados por potencias de $\alpha$ que cumplen esa relacion dada, luego podemos ver como se comportan estas potencias en orden y que asignacion en decimal les podemos hacer.
+$$\begin{array}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+   Primitivo& a_7 & a_6 & a_5 & a_4 & a_3 & a_2 & a_1 & a_0 & Decimal\\
+   \hline
+   0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+   \hline
+   \alpha^0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
+   \hline
+   \alpha^1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 2 \\
+   \hline
+   \alpha^2 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 4 \\
+   \hline
+   \alpha^3 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 8 \\
+   \hline
+   \alpha^4 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 16 \\
+   \hline
+   \alpha^5 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 1 & 32\\
+   \hline
+   \alpha^6 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 1 & 64 \\
+   \hline
+   \alpha^7 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 128 \\
+   \hline
+   \alpha^8 & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 1 & 29 \\
+   \hline
+   \alpha^9 & 0 & 0 & 1 & 1 & 1 & 0 & 1 & 0 & 58 \\
+   \hline
+   \alpha^{10} & 0 & 1 & 1 & 1 & 0 & 1 & 0 & 0 & 116 \\
+   \hline
+   \alpha^{11} & 1 & 1 & 1 & 0 & 1 & 0 & 0 & 0 & 232 \\
+   \hline
+\end{array}$$
+Este idea continua hasta la potencia $\alpha^{254},$ por medio de esta tabla se puede evidenciar mejor el por que se conoce como codigo ciclico, ya que en cierta medida se sigue un patron.\\
+
+Dada la naturaleza del codigo, como tenemos $256$ elementos posibles en el cuerpo, junto al hecho de que queremos ser capaces de corregir dos errores, seria logico escoger $RS(255,251)$, ya que como $d=256-251=5$, $\frac{d-1}{2}=2$, esto nos daria la capacidad de almacenar cadenas de informacion de esa longitud, pero no todas las cadenas son de esta longitud por lo que usar el codigo para mensajes mas cortos resulta en consumir mas memoria y enviar mas simbolos innecesarios, por lo que la idea sera trabajar con versiones acortadas del codigo dependiendo de la longitud del mensaje, esto se consigue desplazando una cantidad de simbolos $a$ el codigo. esto se traduce en $RS(255-a,251-a)$. En escencia este metodo lo que hace es colocar ceros en las $a$ posiciones restantes y simplemente no transmitirlo y colocarlos para la decodificacion, debido a que no influyen en la codificacion de la palabra. Este metodo puede ser estudiado mas a fondo pero no es el proposito principal de este trabajo, por lo que simplemente haremos un ejemplo trasladado.\\
+
+Primero construyamos el polinomio generador, como $d=5$, tenemos por la tabla anterior que
+$$g(x)=\prod_{i=1}^4(x-\alpha^i)=(x-2)(x-4)(x-8)(x-16)=x^4+30x^3+216x^2+231x+116.$$
+Recuerde que la representacion decimal hace referencia a un elemento de $GF(256)$, y los productos y sumas se hacen en ese cuerpo. Esta computacion fue hecha con la ayuda de \textit{Wolfram Mathematica}.\\
+
+Consideremos la palabra \textit{codigo}, esta tiene un total de $6$ simbolos, por lo que la ideaa seria escoger un $a$ tal que $251-a=6$, luego $a=245$, asi la version acortada con la que trabajaremos es $RS(10,6)$. Esto hara que visualmente se entienda mas que es lo que ocurre.\\
+
+Primero lo que hacemos es pasar la palabra a su codigo en Ascii. Por lo que tenemos
+$$99\,111\,100\,105\,103\,111,$$
+Agregamos pequeños espacios para que se distinga a que simbolo hace referencia cada numero. Luego note que a cada numero le asignamos su respectivo elemento en $GF(256).$ Por lo que podemos asignarle un polinomio con esos coeficientes
+$$f(x)=99x^5+111x^4+100x^3+105x^2+103x+111.$$
+Aquí es donde haremos uso del polinomio generador, note que queremos capacidad para 4 símbolos mas de paridad, por lo que se multiplica el polinomio por $x^4$ para tener
+$$f_1(x)=99x^9+111x^8+100x^7+105x^6+103x^5+111x^4.$$
+Luego por el algoritmo de la división note que
+$$f_1(x)=g(x)q(x)+r(x)$$
+De esta manera como $g$ es el polinomio generador, para extender nuestro $f_1$ a una palabra codigo con sus bits de paridad tenemos que
+$$g(x)q(x)=f_1(x)-r(x)=f_1(x)+r(x).$$
+Esta ultima igualdad es debido a que los elementos de $GF(256)$ cumplen aditivamente ser su propio inverso. Note que como el grado de $r$ es menor al de $g$ y $f_1$ su monomio de grado menor es $4$, no alteramos los mensajes de la palabra original. Nuevamente con ayuda de \textit{Wolfram Mathematica} encontramos que
+$$r(x)=221x^3+137x^2+175x+66,$$
+Luego la palabra codificada omitiendo la variable seria
+$$99\,111\,100\,105\,103\,111\,221\,137\,175\,66$$
+Posterior a esto convertimos estos ``números'' a base $4$
+$$1203123312101221121312333131202122331002,$$
+Note que en esta expresión eliminamos los espacios ya que en base 4, lo números decimales entre $0$ y $255$ se pueden escribir usando 4 símbolos, por lo que simplemente basta con tomar de izquierda a derecha subcadenas de 4 elementos.\\
+La pregunta natural que surge es por que hacer este cambio, esto se debe a que queremos emparejar este mensaje con una cadena de ADN, por esto realizamos la asignación
+\begin{align*}
+    A&\mapsto 0\\
+    T&\mapsto 1\\
+    C&\mapsto 2\\
+    G&\mapsto 3
+\end{align*}
+Esto nos da la codificación en cadena de ADN de la palabra ``código''\\
+$$TCAGTCGGTCTATCCTTCTGTCGGGTGTCACTCCGGTAAC,$$
+Esto nos da la cadena con la que trabajaremos. Luego de esto la cadena pasa por un leve ruido, en este caso el error sera introducido a consciencia  para ejemplificar, pero en la implementación se hara por medio de dos métodos particulares.\\
+
+Luego de pasar por el ruido artificial la cadena obtenida es
+$$ACAGTCGGTCTATCCTTCTGTCGGGTGTCACTCCGGTAAC.$$
+Note que por simplicidad cambiamos el primero de la cadena.
+En este momento el proceso se vuelve en revertir lo hecho en la codificación, primero devolvemos a la base 4 y se divide la cadena en subcadenas de longitud 4,
+$$0203\,1233\,1210\,1221\,1213\,1233\,3131\,2021\,2233\,1002$$ se convierte el numero a decimal y posteriormente se plantea el polinomio recibido, que es en esencia el mensaje recibido,
+$$f_2=35x^9+111x^8+100x^7+105x^6+103x^5+111x^4+221x^3+137x^2+175x+66$$
+Note que si el mensaje recibido es el mismo se debería tener que $g|f_2$, pero mas importante aun tendríamos que $f_2(\alpha^i)=0$, para cada $i$, pero en este caso como hay cambio en la cadena, al evaluar puede que nos den resultados no nulos, como vemos a continuación.
+$$f_2(\alpha)=38,\,f_2(\alpha^2)=143,\,f_2(\alpha^3)=39,\,f_2(\alpha^4)=181.$$
+Estos síndromes de evaluación en esencia al igual que en los códigos lineales estudiados en el curso, están completamente determinados por el error. La construcción de la decodificación es mucho mas delicada y compleja que la de la codificación, que resulta mucho mas inmediata. La idea esencial de la decodificación es que a través de estos síndromes, es armar un sistema de ecuaciones que nos dara unos polinomios localizadores de errores, no entraremos en detalles de eso pero el sistema queda de la siguiente manera
+$$\begin{bmatrix}
+    38 & 143\\
+    143 & 39
+\end{bmatrix}\begin{bmatrix}
+    \Lambda_2\\
+    \Lambda_1
+\end{bmatrix}=\begin{bmatrix}
+    39\\
+    181
+\end{bmatrix}$$
+Solucionando el sistema se llega a
+$$\Lambda_1=245\,\Lambda_2=1$$
+En este caso resulto una familia de soluciones por lo que escogimos un valor particular, esto puede deberse a mas factores, pero no ahondaremos en eso, esto nos da los coeficientes de del polinomio de localización de errores
+$$1+245x+x^2$$
+Luego los ceros de este polinomio deberían de darnos la posición del error en el código. De ahí bastaría con determinar la posición y encontrar el polinomio del error.
+En este ejemplo, decidimos ilustrar un caso donde en particular para este algoritmo, no se logra encontrar la posición correcta debido a el mal condicionamiento del sistema de ecuaciones, por lo que esta es una de las cuestiones a tener en cuenta dentro de la implementación y simulaciones.
+
+
