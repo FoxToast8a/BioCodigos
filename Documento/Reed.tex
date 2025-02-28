@@ -45,7 +45,7 @@ esto nos da una construcción por medio de clases de equivalencia, que podemos t
 Note que si excluimos el elemento $0$, tenemos una factorización sobre los elementos no nulos de nuestro cuerpo finito. Con todos estos ingredientes procedemos a dar la definición que usaremos para la codificación
 \begin{definition}
   Dado $\alpha$ un elemento primitivo, el código de Reed-Solomon se define como
-  $$RS(D,k)=\{(f(1),f(\alpha),\ldots,f(\alpha^{n-1}))\in GF(D)^n:f\in GF(D)[x], grad(f)\leq k-1\}.$$
+  $$RS(n,k)=\{(f(1),f(\alpha),\ldots,f(\alpha^{n-1}))\in GF(D)^n:f\in GF(D)[x], grad(f)\leq k-1\}.$$
   Donde escogemos enteros positivos $n=D-1$ y $k<D.$
 \end{definition}
 Notemos que en primera instancia pareciera que no hay diferencia en los códigos, pero antes de proceder con la diferencia crucial, algunas observaciones.
@@ -56,7 +56,7 @@ Notemos que en primera instancia pareciera que no hay diferencia en los códigos
 \end{itemize}
 Estas son pequeñas cosas que se pueden notar inmediatamente del código definido, pero el factor diferencial viene dado por el siguiente hecho que habíamos anticipado previamente
 \begin{theorem}
-    Dado un código $RS(D,k)$, si la distancia mínima del código es $d=D-k$, entonces el polinomio generador del código esta dado por
+    Dado un código $RS(n,k)$, si la distancia mínima del código es $d=D-k$, entonces el polinomio generador del código esta dado por
     $$g(x)=\prod_{i=1}^{d-1}(x-\alpha^i),$$
     donde $\alpha$ es elemento primitivo.
 \end{theorem}

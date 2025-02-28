@@ -1,38 +1,189 @@
 %!TEX root = main.tex
 
-El ácido desoxirribonucleico (ADN) es una molécula fundamental presente en el interior de las células tanto eucariotas como procariotas, que contiene la información genética necesaria para el desarrollo, funcionamiento y reproducción de los organismos. Esta molécula permite la transmisión de la información genética de una generación a la siguiente. Su estructura es una doble hélice, formada por enlaces débiles de hidrógeno que unen las bases nitrogenadas de los nucleótidos purínicos y pirimidínicos, los cuales se enrollan alrededor de un eje central. Cada nucleótido está compuesto por un esqueleto de azúcar desoxirribosa y grupos fosfato, conectados mediante las bases nitrogenadas.\\
+Para realizar la aplicación de la teoría anteriormente explicada, utilizamos Google Colab y Python, junto con las librerías \texttt{unireedsolomon}, \texttt{biopython}, \texttt{matplotlib}, \texttt{py3Dmol} y \texttt{nglview}.\\
+Inicialmente para dar un contexto de las estructuras que estamos utilizando, através de \texttt{py3Dmol} y \texttt{nglview} mostramos el modelo de ADN.Posteriormente, utilizando la librería \texttt{biopython}, para una cadena de ADN, mostramos cuál sería su cadena complementaria y la inversa de esta. Esto nos permite ilustrar cómo estas cadenas están anidadas entre sí. Esta aplicación la hicimos através del siguiente código 
 
-En cuanto a la historia del descubrimiento de la estructura del ADN, se sabe que fue inicialmente identificada por la científica Rosalind Franklin, quien a través de la técnica de difracción de rayos X obtuvo fotografías que revelaban la forma helicoidal de la molécula. Sin embargo, su contribución no fue reconocida en su momento. Fue solo cuando James Watson y Francis Crick, científicos que trabajaban en el Laboratorio Cavendish, utilizaron esas imágenes y algunas de las deducciones previas para publicar, en 1953, el artículo que describía la estructura del ADN. Años después, Watson y Crick recibieron el Premio Nobel de Medicina por este descubrimiento, pero nunca se le otorgó el reconocimiento que le correspondía a Rosalind Franklin.\\
+\begin{lstlisting}[language=Python]
+from Bio.Seq import Seq 
+from Bio.SeqUtils import gc_fraction
 
-En cuanto a la estructura molecular, se sabe que el ADN está formado por cuatro elementos fundamentales: los nucleótidos adenina (A), guanina (G), timina (T) y citosina (C). Los dos primeros corresponden a los nucleótidos purínicos y los dos restantes son pirimidínicos. Estas bases nitrogenadas se emparejan de manera específica: la adenina se empareja con la timina y la guanina con la citosina. Este emparejamiento es esencial para la estabilidad y la función del ADN, permitiendo una transmisión precisa de la información genética.\\
+# Aqui poner la cadena que quieran
+cadena_adn = Seq("AGCTAGCTAGCTAAGCTGTA")
 
-La importancia del ADN radica en que es esencial para los procesos que la célula utiliza para elaborar todas las proteínas que un ser vivo necesita para subsistir. Estos procesos de transmisión de información se realizan en tres etapas, a las cuales se denomina el dogma central de la biología molecular. Este concepto describe el flujo de información genética en una célula, estableciendo que la información genética fluye desde el ADN, a través de la síntesis de ARN, y luego a través de la síntesis de proteínas.\\
+# cadena complementaria
+cadena_complementaria = cadena_adn.complement()
 
-Para poder realizar el paso de ADN a ARNm o ácido ribonucleico mensajero, necesitamos pasar por el proceso de replicación. La replicación es el proceso mediante el cual una célula copia su ADN para asegurar que cada célula hija reciba una copia exacta de la información genética. Este proceso es esencial para la división celular y tiene lugar antes de que una célula se divida, durante la fase S del ciclo celular. Uno de los primeros pasos en la replicación es cuando se desenrolla la doble hélice del ADN, lo cual es realizado por una clase de enzimas conocidas como helicasas. Las helicasas tienen la función de romper los enlaces de hidrógeno que mantienen unidas las bases nitrogenadas de las dos cadenas complementarias de ADN, separándolas y formando lo que se conoce como la horquilla de replicación.\\
+# inversa complementaria o cadena opuesta
+cadena_inversa_complementaria = cadena_adn.reverse_complement()
 
-Es importante entender que el ADN es una molécula en la que sus dos cadenas tienen orientaciones opuestas. Una cadena se lee en la dirección 5' a 3', mientras que la otra se lee en la dirección opuesta, es decir, 3' a 5'. Esto se refiere a los extremos de las cadenas de ADN: el extremo 5' de una cadena de ADN tiene un grupo fosfato unido al quinto carbono del azúcar, mientras que el extremo 3' tiene un grupo hidroxilo unido al tercer carbono del azúcar.Una vez que se forma la horquilla de replicación, las dos cadenas de ADN están abiertas y disponibles para ser copiadas. Sin embargo, la lectura y la síntesis del ADN no son simétricas, ya que la ADN polimerasa, la enzima encargada de sintetizar nuevas cadenas de ADN, solo puede agregar nucleótidos en la dirección 5' a 3'.\\
+print("Cadena ADN: ", cadena_adn)
+print("Cadena complementaria: ", cadena_complementaria)
+print("Cadena inversa complementaria: ", cadena_inversa_complementaria)
+\end{lstlisting}
+lo cual se puede ilustrar de la siguiente manera
+\begin{figure}[h]
+\centering
+        \includegraphics[scale=0.25]{adn1.jpeg} 
+    \end{figure}
 
-Ahi inicia el segundo paso el cual es la transcripción, en este la información genética contenida en el ADN se transcribe a una molécula de ARN mensajero (ARNm). Este proceso ocurre en el núcleo de las células eucariotas y en el citoplasma de las procariotas y es esencial para la posterior síntesis de proteínas. La transcripción comienza cuando la enzima ARN polimerasa se une a una región específica del ADN conocida como el promotor. El promotor es una secuencia de bases que indica el inicio de un gen y es crucial para la correcta transcripción del ADN. Una vez que la ARN polimerasa se une al promotor, comienza a desenrollar la doble hélice del ADN y a leer la cadena de ADN en la dirección 3' a 5'.\\
+Aunque no utilizaremos este proceso en los siguientes pasos, mostramos cómo se realiza la transcripción de ADN a ARN y cómo se traduce el ARN a proteínas.
 
-A medida que la ARN polimerasa avanza, sintetiza una cadena de ARN mensajero (ARNm) complementaria a la cadena molde del ADN. Durante este proceso, las bases del ADN se emparejan de forma específica con los ribonucleótidos, la adenina (A) del ADN se empareja con el uracilo (U) en el ARN , la citosina (C) con la guanina (G). El resultado es una nueva cadena de ARN que lleva la misma información genética que el ADN, pero en una forma que puede ser utilizada en la síntesis de proteínas.\\
+\begin{lstlisting}[language=Python]
+arn = cadena_adn.transcribe()
+print(f"Secuencia ARN: {arn}")
 
-La ARN polimerasa sigue leyendo el ADN hasta llegar a una secuencia de terminación que indica el final del gen. En este punto, la transcripción finaliza, y el ARN mensajero (ARNm) recién formado se separa del ADN. El ARNm, que ahora contiene la "copia" de la información genética, es transportado fuera del núcleo hacia los ribosomas en el citoplasma, donde se llevará a cabo la siguiente etapa.\\
+proteina = arn.translate()
+print(f"Proteina: {proteina}")
+\end{lstlisting}
+Ilustrando un poco como se realiza la transcripción de ADN a ARN hicimos el siguiente gráfico
+\begin{figure}[h]
+\centering
+        \includegraphics[scale=0.25]{arn.png} 
+    \end{figure}
+Utilizando todas las librerias anteriormente mencionadas realizamos la representación gráfica de la proteina a la que se puede transcribir la cadena de ARN (estas imágenes puede verlas en el archivo de código).\\
 
-Por último tenemos la traducción, este es el proceso  comienza cuando el ARNm se une a un ribosoma en el citoplasma. El ribosoma lee el ARNm en bloques de tres bases nitrogenadas consecutivas, llamados códones. Cada códon especifica un aminoácido particular, que es la unidad básica de las proteínas. Existen 64 posibles combinaciones de códones, que codifican para 20 aminoácidos diferentes, lo que permite una gran diversidad en la construcción de proteínas.\\
 
-El ARN de transferencia ARNt  tiene un anticódon, el cual es una secuencia de tres bases que es complementaria a un códon del ARNm en uno de sus extremos y un aminoácido específico en el otro extremo. A medida que el ribosoma lee el ARNm, el ARNt transporta el aminoácido correspondiente al códon leído y lo coloca en la cadena polipeptídica en crecimiento. Este proceso se repite a medida que el ribosoma avanza a lo largo del ARNm. La traducción continúa hasta que el ribosoma encuentra un códon de terminación en el ARNm, lo que indica el final de la síntesis de la proteína. En ese momento, la cadena polipeptídica recién formada se libera, y la proteína se pliega para adoptar una estructura funcional.\\
+\subsection{Codificación y Decodificación con Códigos Reed-Solomon y Hamming}
 
-Sin embargo, este proceso no siempre se lleva a cabo sin errores, por lo cual se tienen mecanismos que buscan corregir la mayoría de los errores que pueden surgir puesto que el no corregirlos por ejemplo en los humanos puede verse reflejado en mutaciones genéticas, proteínas no funcionales o mal plegadas y a la pérdida de la integridad genética, lo que puede causar disfunción en todo el organismo.\\
+En esta sección, nos adentramos en la parte central de nuestro trabajo, donde realizamos una codificación y decodificación utilizando los códigos Reed-Solomon y Hamming.
 
-\subsubsection{Corrección de errores}
+\subsubsection{Ejemplo de Corrección de Errores con Reed-Solomon}
+Para ilustrar este proceso, comenzamos con un ejemplo de transcripción de ADN a ARN, donde introducimos errores en la secuencia de ARN. Luego, utilizamos los códigos Reed-Solomon para corregir estos errores, simulando el mecanismo de corrección que ocurre en la naturaleza.
 
-La corrección de errores en los procesos celulares
-Los procesos de replicación, transcripción y traducción son fundamentales para la correcta expresión de la información genética. Sin embargo, a lo largo de estos procesos pueden ocurrir errores, como la inserción de bases incorrectas o la incorrecta traducción de los codones. Para eso existen mecanismos de corrección para asegurar la fidelidad genética y evitar que estos errores afecten a la célula.\\
+\begin{lstlisting}[language=Python]
+import unireedsolomon as rs
+from random import choice, randint
 
-La replicación del ADN es un proceso crítico para la división celular. Sin embargo, es común que durante la síntesis de las nuevas cadenas de ADN se produzcan errores en la incorporación de nucleótidos. Para corregir estos errores, la ADN polimerasa tiene una función de corrección por prueba de lectura. Esta actividad se realiza mediante la exonucleasa 3' a 5', una función de la propia enzima que le permite retroceder y eliminar los nucleótidos incorrectos que acaba de incorporar, reemplazándolos por los correctos.\\
+def generar_adn(longitud):
+    nucleotidos = "ATCG"
+    return ''.join(choice(nucleotidos) for _ in range(longitud))
 
-De igual manera, en la transcripción para la corrección de errores el ARN polimerasa también posee mecanismos de corrección para detectar y corregir ciertos errores en el ARNm durante su síntesis, como lo es retirar el nucleótido equivocado y poner el correcto en su lugar\\
+def adn_a_arn(adn):
+    return adn.replace('T', 'U')
 
-En la traducción también pueden ocurrir errores, como la incorporación de un aminoácido incorrecto debido a un códon mal leído o a un error en el emparejamiento entre el ARNm y el ARNt. Para esto, los ribosomas tienen mecanismos de verificación para asegurar que la secuencia de aminoácidos sea correcta, por ejemplo, el anticódon del ARNt debe coincidir exactamente con el códon del ARNm para que el aminoácido correcto se incorpore en la proteína en formación.\\
 
-Otros errores que se pueden presentar en este proceso que no son por un cambio de nucleótido, sino por un daño en la estructura o un espacio sin nucleótido, para estos existe mecanismos como la reparación por escisión de bases y la reparación por escisión de nucleótidos, este es un mecanismo que se usa para detectar y eliminar ciertos tipos de bases dañadas mediante un grupo de enzimas llamadas glicosilasas, donde cada glicosilasa detecta y elimina un tipo específico de base dañada.\\
+def introducir_mutaciones(sec, num_mutaciones):
+    sec_lista = list(sec)
+    nucleotidos = "AUCG"
+    for _ in range(num_mutaciones):
+        pos = randint(0, len(sec_lista) - 1)
+        nucleotido_original = sec_lista[pos]
+        nucleotidos_posibles = nucleotidos.replace(nucleotido_original, '')
+        sec_lista[pos] = choice(nucleotidos_posibles)
+    return ''.join(sec_lista)
+
+
+n = 19  
+k = 15  
+
+coder = rs.RSCoder(n, k)
+
+
+adn_original = generar_adn(15)
+print(f"ADN original: {adn_original}")
+
+
+arn_original = adn_a_arn(adn_original)
+print(f"ARN original: {arn_original}")
+
+arn_codificado = coder.encode(arn_original)
+print(f"ARN codificado (hex): {arn_codificado.encode('latin1').hex()}")
+
+
+arn_con_mutaciones = introducir_mutaciones(arn_codificado, 2)  # Introducir 2 mutaciones
+print(f"ARN con mutaciones: {arn_con_mutaciones}")
+
+
+try:
+    arn_corregido, errores_corregidos = coder.decode(arn_con_mutaciones)
+    print(f"ARN corregido: {arn_corregido}")
+    print(f"Errores corregidos: {errores_corregidos}")
+except rs.RSCodecError as e:
+    print(f"Error: No se pudieron corregir todos los errores. {e}")
+\end{lstlisting}
+
+En este código se genera una cadena de ADN aleatoria de longitud especificada y esta se transcribe a ARN, reemplazando las timinas (T) por uracilos (U). Posteriormente, se introducen mutaciones en la secuencia de ARN para simular errores en la transcripción, la secuencia de ARN se codifica utilizando el código Reed-Solomon, que añaden $4$ bits de paridad para la detección y corrección de errores.\\
+
+Este proceso es análogo a lo que ocurre en la naturaleza durante la transcripción del ADN. La enzima polimerasa revisa y corrige los errores que puedan ocurrir durante la replicación del ADN, asegurando que la información genética se transmita de manera precisa. En nuestro caso, los códigos Reed-Solomon actúan como la polimerasa, corrigiendo los errores introducidos en la secuencia de ARN.\\
+
+
+En este ejemplo, el número de mutaciones introducidas es estático (2 mutaciones), ya que la idea es acercarse lo más posible a la realidad biológica. En la naturaleza, la probabilidad de que ocurran errores durante la transcripción es baja, y los mecanismos de corrección son altamente eficientes. Por esta razón, no se utilizó una matriz de transición para introducir mutaciones de manera probabilística, ya que esto reduciría la probabilidad de decodificación correcta, algo que no ocurre en el ADN.
+
+
+
+
+\subsubsection{Aplicación Práctica: Codificación y Decodificación de una Palabra}
+
+Para mostrar una aplicación análoga a lo que hace el ADN en la realidad, codificamos una palabra utilizando el código Reed-Solomon. Es importante destacar que las codificaciones no se aplican a los bits de paridad, y para utilizar completamente la librería \texttt{unireedsolomon}, realizamos una serie de conversiones. Primero, convertimos la cadena de texto a ASCII, luego a base 4, asignamos nucleótidos de ADN, introducimos ruido mediante una matriz de transición, y finalmente realizamos las conversiones inversas para decodificar la palabra. La idea principal del código es,
+
+\begin{lstlisting}[language=Python]
+palabra = input("Ingrese una palabra: ")
+
+
+ascii_palabra = palabra_a_ascii(palabra)
+print(f"Palabra en ASCII: {ascii_palabra}")
+
+
+polinomio_palabra = polinomio(ascii_palabra)
+print(f"Palabra en polinomio: {polinomio_palabra}")
+
+
+def arreglar_palabra(palabra):
+    palabra_coder = ''
+    for i in ascii_palabra:
+        palabra_coder = palabra_coder + i
+    num_coder = int(palabra_coder[0:len(palabra_coder)])
+    return palabra_coder
+
+palabra_coder = arreglar_palabra(ascii_palabra)
+
+
+n = len(palabra_coder) + 4
+k = len(palabra_coder)
+
+
+coder = rs.RSCoder(n, k)
+
+
+ascii_codificado = coder.encode(palabra_coder)
+print(f"Palabra codificada: {ascii_codificado}")
+
+
+base4_codificado = ascii_a_base4(ascii_palabra)
+print(f"Palabra codificada en base 4: {base4_codificado}")
+
+
+adn_codificado = base4_a_adn(base4_codificado)
+print(f"Palabra codificada en ADN: {adn_codificado}")
+
+
+matriz_transicion = [
+    [0.98, 0.005, 0.005, 0.01], 
+    [0.005, 0.005, 0.98, 0.01], 
+    [0.01, 0.005, 0.005, 0.98]   
+]
+
+
+adn_con_errores = introducir_errores_con_matriz(adn_codificado, matriz_transicion)
+print(f"ADN con errores: {adn_con_errores}")
+
+base4_con_errores = nucleotidos_a_base4(adn_con_errores)
+print(f"Base 4 con errores: {base4_con_errores}")
+
+ascii_con_errores = base4_a_ascii(base4_con_errores)
+print(f"ASCII con errores: {ascii_con_errores}")
+
+ascii_con_errores = ascii_con_errores + ascii_codificado[len(ascii_codificado) - 4:len(ascii_codificado)]
+print(f"ASCII con errores y paridad: {ascii_con_errores}")
+
+try:
+    palabra_corregida = coder.decode(ascii_con_errores)
+    print(f"Palabra corregida: {palabra_corregida}")
+    palabra_final = ascii_a_palabra(palabra_corregida[0], ascii_palabra)
+    print(f"Palabra final: {palabra_final}")
+\end{lstlisting}
+
+La palabra ingresada se convierte a su representación en ASCII, lo que permite trabajar con valores numéricos, los valores ASCII se convierten a base 4, lo que facilita la asignación de nucleótidos de ADN.Cada dígito en base 4 se asigna a un nucleótido (A, T, C, G) posteriormente, se utiliza una matriz de transición para introducir errores en la secuencia de ADN, simulando mutaciones.Por último se realizan las conversiones inversas para obtener la palabra original, corrigiendo los errores introducidos mediante el código Reed-Solomon.
+
+
+
