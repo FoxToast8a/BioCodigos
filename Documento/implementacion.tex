@@ -42,8 +42,137 @@ Ilustrando un poco como se realiza la transcripción de ADN a ARN hicimos el sig
     \end{figure}
 Utilizando todas las librerias anteriormente mencionadas realizamos la representación gráfica de la proteina a la que se puede transcribir la cadena de ARN (estas imágenes puede verlas en el archivo de código).\\
 
+\subsection{Ejemplo corrección de Errores con Hamming(7,4)}
 
-\subsection{Codificación y Decodificación con Códigos Reed-Solomon y Hamming}
+En este ejemplo vamos a partir de una cadena de ADN la cual codificaremos y le induciremos error para ver la forma de  corrección de errores de Hamming con las cadenas de ARN.\\
+
+El proceso de operación del código es el siguiente: comenzamos generando una cadena de ADN de forma aleatoria. Primero, verificamos si la longitud de la cadena es par, ya que los bloques a codificar deben tener una longitud de 4. A continuación, realizamos un mapeo entre los nucleótidos y los números binarios del 0 al 3, lo cual nos permite aplicar el algoritmo de Hamming.\\
+
+La codificación se lleva a cabo mediante el cálculo de los bits de paridad, un proceso análogo a la multiplicación por la matriz generadora. Esto nos permite transformar bloques de longitud 4 en bloques de longitud 7. Posteriormente, se verifica si hay errores, y gracias a la técnica de Hamming, podemos detectar y corregir un error máximo, lo que garantiza una baja tasa de errores.\\
+
+Finalmente, se lleva a cabo la decodificación a ARN, lo que nos permite comparar la cadena de entrada con la cadena de salida.\\
+
+
+
+\subsection{Codificación y Decodificación Hamming (7,4)}
+
+Para realizar la implementación, en este caso partiremos de una cadena de ADN la cual codificaremos y le induciremos error para ver la forma de  corrección de errores de Hamming con las cadenas de ARN.\\
+
+La manera en la que el código funciona es el siguiente: comenzamos generando una cadena de ADN de forma aleatoria. Primero, verificamos si la longitud de la cadena es par, ya que los bloques a codificar deben tener una longitud de 4. A continuación, realizamos un mapeo entre los nucleótidos y los números binarios del 0 al 3, lo cual nos permite aplicar el algoritmo de Hamming.\\
+
+La codificación se lleva a cabo mediante el cálculo de los bits de paridad, un proceso análogo a la multiplicación por la matriz generadora. Esto nos permite transformar bloques de longitud 4 en bloques de longitud 7. Posteriormente, se verifica si hay errores, y gracias a la técnica de Hamming, podemos detectar y corregir un error máximo, lo que garantiza una baja tasa de errores.\\
+
+Finalmente, se lleva a cabo la decodificación a ARN, lo que nos permite comparar la cadena de entrada con la cadena de salida.\\
+\begin{lstlisting}[language=Python]
+
+def generar_adn(longitud):
+    nucleotidos = "ATCG"
+    return ''.join(random.choice(nucleotidos) for _ in range(longitud))
+
+def completar_adn_multiplo_de_2(secuencia):
+    nucleotidos = "ACGT"
+    while len(secuencia) % 2 != 0:
+        secuencia += random.choice(nucleotidos)
+    return secuencia
+
+secuencia_adn = generar_adn(15)
+secuencia_completa = completar_adn_multiplo_de_2(secuencia_adn)
+print("Secuencia de ADN: " + secuencia_adn)
+print("Secuencia completa: " + secuencia_completa)
+
+
+def mapear_secuencia_adn_binario(secuencia_completa):
+    mapa = {'A': '00', 'C': '01', 'G': '10', 'T': '11'}
+    return ''.join(mapa[n] for n in secuencia_completa)
+
+secuencia_binaria = mapear_secuencia_adn_binario(secuencia_completa)
+print("Secuencia binaria: " + secuencia_binaria)
+
+
+def calcular_bits_paridad(bits):
+    p1 = bits[0] ^ bits[1] ^ bits[3]
+    p2 = bits[0] ^ bits[2] ^ bits[3]
+    p3 = bits[1] ^ bits[2] ^ bits[3]
+    return [p1, p2, bits[0], p3, bits[1], bits[2], bits[3]]
+
+def codificar_hamming(cadena):
+    bloques = [cadena[i:i+4] for i in range(0, len(cadena), 4)]
+    resultado = []
+
+    for bloque in bloques:
+        bits = list(map(int, bloque))
+        hamming = calcular_bits_paridad(bits)
+        resultado.extend(hamming)
+
+    return ''.join(map(str, resultado))
+
+codigo_hamming = codificar_hamming(secuencia_binaria)
+print("Secuencia codificada: " + codigo_hamming)
+
+
+def introducir_errores_binarios(cadena, probabilidad_error):
+
+    vector = np.array([int(bit) for bit in cadena])
+    mascara = np.random.rand(len(vector)) < probabilidad_error
+    vector_corrupto = np.bitwise_xor(vector, mascara.astype(int))
+    return ''.join(map(str, vector_corrupto))
+
+probabilidad = 0.1
+
+cadena_con_errores = introducir_errores_binarios(codigo_hamming, probabilidad)
+print("Secuencia codificada con errores: "+ cadena_con_errores)
+
+def corregir_hamming(cadena):
+    bloques = [cadena[i:i+7] for i in range(0, len(cadena), 7)]
+    resultado = []
+
+    for bits in bloques:
+        bits = list(map(int, bits))
+
+        p1_calc = bits[0] ^ bits[2] ^ bits[4] ^ bits[6]
+        p2_calc = bits[1] ^ bits[2] ^ bits[5] ^ bits[6]
+        p3_calc = bits[3] ^ bits[4] ^ bits[5] ^ bits[6]
+
+        error_pos = p1_calc + (p2_calc << 1) + (p3_calc << 2)
+
+        if error_pos != 0:
+            bits[error_pos - 1] ^= 1
+
+        resultado.extend(bits)
+
+    return ''.join(map(str, resultado))
+
+codigo_corregido = corregir_hamming(cadena_con_errores)
+print( "Secuencia codificada corregida: "+codigo_corregido)
+
+
+def extraer_datos_hamming(binario):
+
+    bloques = [binario[i:i+7] for i in range(0, len(binario), 7)]
+
+    datos_extraidos = []
+    for bloque in bloques:
+        datos_extraidos.append(bloque[2] + bloque[4] + bloque[5] + bloque[6])
+
+    return ''.join(datos_extraidos)
+
+def binario_a_arn(binario):
+    datos_puros = extraer_datos_hamming(binario)
+
+    mapa_adn = {'00': 'A', '01': 'C', '10': 'G', '11': 'U'}
+
+    arn = ''.join(mapa_adn[datos_puros[i:i+2]] for i in range(0, len(datos_puros), 2))
+
+    return arn
+
+arn = binario_a_arn(codigo_corregido)
+print("Secuencia de ARN: "+ arn)
+\end{lstlisting}
+
+
+
+
+\subsection{Codificación y Decodificación con Códigos Reed-Solomon }
 
 En esta sección, nos adentramos en la parte central de nuestro trabajo, donde realizamos una codificación y decodificación utilizando los códigos Reed-Solomon y Hamming.
 
@@ -187,3 +316,9 @@ La palabra ingresada se convierte a su representación en ASCII, lo que permite 
 
 
 
+\section{Resultados}
+
+Los resultados obtenidos con el código de Hamming mostraron al momento de la implementación que requieren un bajo porcentaje de error porque de otra forma al momento de traducir los nucleótidos son propensos a cambiar entre si , ya que  en un bloque de 7 solo uno podía tener error para que el proceso fuera satisfactorio.\\
+
+
+Para el caso de el código realizado para Reed-Solomon al intentar automatizar el algoritmo para que nos mostrara un patrón de corrección para 100, 1000 y 10000 simulaciones el código generaba un error en la conversión de la palabra a ASCII, esto de acuerdo a lo que investigamos tiene que ver con que el randomizador para palabras cambia el encode de la cadena de texto y no es uniforme por lo cual no hay manera de sistematizarlo por lo cual realizamos simulaciones manuales, para un error se realizaron $150$ simulaciones para longitud de palabras de 1 hasta 20 de los cuales obtuvimos $89$ resultados correctos y aunque la teoría nos indique que deberian ser $150$, en este caso se obtuvieron $31$ codificacíones erroneas y $30$ simulaciones donde el teorema chino del residuo no se podia aplicar por la falta de síndromes o el exceso de ellos. Por otro lado realizamos $65$ simulaciones donde tomamos longitudes de cadena entre 3 y 20 y tambien pusimos a variar el error entre 1 y la longitud de cadena de lo cual obtuvimos $7$ simulaciones correctas,$18$ nos arrojaron una codifiación incorrecta y $40$ tuvieron el mismo problema dado por el teorema chino del residuo.
