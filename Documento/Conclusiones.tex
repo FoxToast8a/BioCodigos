@@ -1,0 +1,8 @@
+%!TEX root = main.tex
+Para finalizar, daremos unas breves reflexiones del proyecto junto a posibles direcciones futuras.
+\begin{itemize}
+    \item Se pudo evidenciar como de manera teorica los codigos de Reed-Solomon, al tener una fundamentacion mas algebraica, en su enfoque como un codigo ciclico, resulta mucho mas complicado y lleno de errores en el proceso implementacion de la decodificacion que el caso de los codigos de Hamming.
+    \item Una de las ventajas de usar Reed-Solomon, es que al aprovechar las propiedades algebraicas de los polinomios, podemos reducir la memoria usada, ya que almacenar matrices tiene mucho mas costo. Pero este metodo tiene sus desventajas y es que depende del mensaje editado y el algoritmo de decodificacion usado, puede que palabras que teoricamente se puedan decodificar, la implementacion no pueda hacerlo.
+    \item Debido a aquellas cadenas que resultaba imposible decodificar, una posible direccion futura seria pulir mas el codigo e intentar implementar algunos de los algoritmos de decodificacion por nosotros mismos para entenderlos mas a fondo.
+    \item Debido a lo recientes que son los resultados en este area de investigacion, las ideas tratadas en este proyecto son solo un pequeño acercamiento hacia las analogias que se pueden hacer y unos ejemplos de la implementacion de estos codigos sin entrar mucho a detalle de como funcionan y de su eficiencia. Por lo que para continuar por esta linea se podria primero ahondar mas en los metodos usados y buscar que metodo resulta mas eficiente, tambien estudiar estructuras mas robustas de informacion, debido a que en el proyecto estudiamos cadenas simples, no uniones de estas. Este enfoque podria ser aun mas enriquecedor.
+\end{itemize}
